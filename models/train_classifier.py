@@ -1,3 +1,4 @@
+import os
 import sys
 import pandas as pd
 import numpy as np
@@ -100,10 +101,16 @@ def save_model_related(model, count_vectorizer, tfidf_transformer, model_filepat
     print(f'Best parameters found for related classification: {model.best_params_}')
     print(f'Best Precision score for related classification: {model.best_score_}')
 
-    # Save the best model for related classification
-    joblib.dump(model.best_estimator_, f'{model_filepath}/best_model_related.pkl')
-    joblib.dump(count_vectorizer, f'{model_filepath}/count_vectorizer_related.pkl')
-    joblib.dump(tfidf_transformer, f'{model_filepath}/tfidf_transformer_related.pkl')
+    # file_path to save the model
+    model_filepath = 'best_models'
+
+    # Create the directory if it doesn't exist
+    os.makedirs(model_filepath, exist_ok=True)
+
+    # Save the model and other files in the specified directory
+    joblib.dump(model.best_estimator_, os.path.join(model_filepath, 'best_model_related.pkl'))
+    joblib.dump(count_vectorizer, os.path.join(model_filepath, 'count_vectorizer_related.pkl'))
+    joblib.dump(tfidf_transformer, os.path.join(model_filepath, 'tfidf_transformer_related.pkl'))
 
 def build_model_multi(X, Y):
     # Split the dataset into training and testing sets for multi-label classification
@@ -192,10 +199,16 @@ def save_model_multi(model, count_vectorizer, tfidf_transformer, model_filepath)
     print(f'Best parameters found for multi-label classification: {model.best_params_}')
     print(f'Best Precision score for multi-label classification: {model.best_score_}')
 
+    # file_path to save the model
+    model_filepath = 'best_models'
+
+    # Create the directory if it doesn't exist
+    os.makedirs(model_filepath, exist_ok=True)
+
     # Save the best model for multi-label classification
-    joblib.dump(model.best_estimator_, f'{model_filepath}/best_model_multi.pkl')
-    joblib.dump(count_vectorizer, f'{model_filepath}/count_vectorizer_multi.pkl')
-    joblib.dump(tfidf_transformer, f'{model_filepath}/tfidf_transformer_multi.pkl')
+    joblib.dump(model.best_estimator_, os.path.join(model_filepath, 'best_model_multi.pkl'))
+    joblib.dump(count_vectorizer, os.path.join(model_filepath, 'count_vectorizer_multi.pkl'))
+    joblib.dump(tfidf_transformer, os.path.join(model_filepath, 'tfidf_transformer_multi.pkl'))
 
 def main():
     if len(sys.argv) == 8:
@@ -247,8 +260,9 @@ def main():
 
     else:
         print('Please provide the filepath of the disaster messages database, the filepaths for the related and multi models, '
-              'the filepaths for the vectorizers and transformers as arguments. \n\nExample: python '
-              'train_classifier.py ../data/DisasterResponse.db related_model.pkl multi_model.pkl '
+              'the filepaths for the vectorizers and transformers as arguments.\n'
+              'Go to the "models/" directory and use the example bellow\n'
+              'Example: python train_classifier.py ../data/DisasterResponse.db related_model.pkl multi_model.pkl '
               'count_vec_related.pkl tfidf_trans_related.pkl count_vec_multi.pkl tfidf_trans_multi.pkl')
 
 if __name__ == '__main__':
