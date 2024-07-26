@@ -102,7 +102,7 @@ def save_model_related(model, count_vectorizer, tfidf_transformer, model_filepat
     print(f'Best Precision score for related classification: {model.best_score_}')
 
     # file_path to save the model
-    model_filepath = 'best_models'
+    model_filepath = 'models/best_models'
 
     # Create the directory if it doesn't exist
     os.makedirs(model_filepath, exist_ok=True)
@@ -261,8 +261,7 @@ def main():
     else:
         print('Please provide the filepath of the disaster messages database, the filepaths for the related and multi models, '
               'the filepaths for the vectorizers and transformers as arguments.\n'
-              'Go to the "models/" directory and use the example bellow\n'
-              'Example: python train_classifier.py ../data/DisasterResponse.db related_model.pkl multi_model.pkl '
+              'Example: python models/train_classifier.py data/DisasterResponse.db related_model.pkl multi_model.pkl '
               'count_vec_related.pkl tfidf_trans_related.pkl count_vec_multi.pkl tfidf_trans_multi.pkl')
 
 if __name__ == '__main__':
