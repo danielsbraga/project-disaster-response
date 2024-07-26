@@ -9,6 +9,10 @@
 
 {% block content %}
     <h1 class="text-center">Result</h1>
+    {% if error_message %}
+        <div class="alert alert-danger text-center">{{ error_message }}</div>
+    {% endif %}
+    {% if classification_result %}
         <ul class="list-group">
             {% for category, classification in classification_result.items() %}
                 {% if classification == 1 %}
@@ -17,8 +21,8 @@
                     <li class="list-group-item list-group-item-dark text-center">{{category.replace('_', ' ').title()}}</li>
                 {% endif %}
             {% endfor %}
-
-        </div>
-    </div>
-
+        </ul>
+    {% else %}
+        <p class="text-center">No relevant categories found for this message.</p>
+    {% endif %}
 {% endblock %}
