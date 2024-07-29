@@ -8,34 +8,19 @@ from plotly.graph_objs import Bar
 from sqlalchemy import create_engine
 from flask import Flask, render_template, request
 
+# import custom classes
+sys.path.append('models/')
+from dataprocessor import TextProcessor, Resampler
+
 app = Flask(__name__)
-
-# Add the path to the dataprocessor module
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../models')))
-
-# Define the directory for the best models
-best_models_dir = "models/best_models/"
-
-# Load model files
-related_model = joblib.load(os.path.join(best_models_dir, "best_model_related.pkl"))
-count_vec_related = joblib.load(os.path.join(best_models_dir, "count_vectorizer_related.pkl"))
-tfidf_trans_related = joblib.load(os.path.join(best_models_dir, "tfidf_transformer_related.pkl"))
-multi_model = joblib.load(os.path.join(best_models_dir, "best_model_multi.pkl"))
-count_vec_multi = joblib.load(os.path.join(best_models_dir, "count_vectorizer_multi.pkl"))
-tfidf_trans_multi = joblib.load(os.path.join(best_models_dir, "tfidf_transformer_multi.pkl"))
-
-# Print the type of loaded models for debugging
-print("related_model type:", type(related_model))
-print("count_vec_related type:", type(count_vec_related))
-print("tfidf_trans_related type:", type(tfidf_trans_related))
-print("multi_model type:", type(multi_model))
-print("count_vec_multi type:", type(count_vec_multi))
-print("tfidf_trans_multi type:", type(tfidf_trans_multi))
 
 # Load data
 engine = create_engine('sqlite:///data/DisasterResponse.db')
 df = pd.read_sql_table("messages", engine)
 
+# Load models
+related_model = joblib.load("models/best_models/related_model.pkl")
+multi_model = joblib.load("models/best_models/multi_model.pkl")
 
 @app.route('/')
 @app.route('/index')
@@ -128,22 +113,15 @@ def go():
     error_message = None
 
     try:
-        # Ensure the correct sequence of transformations
-        query_vectorized = count_vec_related.transform([query])
-        query_vectorized = tfidf_trans_related.transform(query_vectorized)
-        is_related = related_model.predict(query_vectorized)[0]
+        # Use related classification model to predict query
+        is_related = related_model.predict([query])[0]
 
         # Debug print to check if the text is related
         print("Is related:", is_related)
 
-        if is_related:
-            query_vectorized = count_vec_multi.transform([query])
-            query_vectorized = tfidf_trans_multi.transform(query_vectorized)
-            
-            # Debug print to check the vectorized query for multi_model
-            print("Vectorized query for multi_model:", query_vectorized)
-            
-            classification_labels = multi_model.predict(query_vectorized)[0]
+        if is_related:  
+            # If query is related, check which labels                 
+            classification_labels = multi_model.predict([query])[0]
             classification_results = dict(zip(df.columns[5:], classification_labels))
 
             # Debug print to check classification results
