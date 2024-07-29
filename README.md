@@ -41,16 +41,12 @@ Considering the content in the data, this project was built in a two-part machin
 ### Part 1: Related Classification
 - **Objective**: Determine if a given message is related to a disaster (binary classification: related or not related).
 - **Components**:
-  - `best_model_related.pkl`: A machine learning model that predicts if a message is related to a disaster.
-  - `count_vectorizer_related.pkl`: A `CountVectorizer` that transforms text data into token counts.
-  - `tfidf_transformer_related.pkl`: A `TfidfTransformer` that converts the token counts into TF-IDF features.
+  - `model_related.pkl`: A machine learning model that predicts if a message is related to a disaster.
 
 ### Part 2: Multi-Classification
 - **Objective**: If the message is related to a disaster, classify it into specific categories (multi-label classification).
 - **Components**:
-  - `best_model_multi.pkl`: A machine learning model that predicts the specific disaster-related categories for a message.
-  - `count_vectorizer_multi.pkl`: A `CountVectorizer` that transforms text data into token counts.
-  - `tfidf_transformer_multi.pkl`: A `TfidfTransformer` that converts the token counts into TF-IDF features.
+  - `model_multi.pkl`: A machine learning model that predicts the specific disaster-related categories for a message.
 
 ## Web Application
 The web application is built using Flask and provides the following functionalities:
@@ -87,12 +83,8 @@ Overview of the main files and directories in the repository:
   - `dataprocessor.py`: Script containing additional data processing utilities.
   - `train_classifier.py`: Script for training the machine learning models.
   - `best_models/`: Subdirectory intended for storing the best performing models and their components. (Note: The files in this directory are empty in the GitHub repository because they are very large and exceed GitHub's size limits).
-    - `best_model_multi.pkl`: Model for multi-label classification of disaster-related messages.
-    - `best_model_related.pkl`: Model for binary classification to determine if a message is related to a disaster.
-    - `count_vectorizer_multi.pkl`: CountVectorizer object for text preprocessing for multi-class classification.
-    - `count_vectorizer_related.pkl`: CountVectorizer object for text preprocessing for binary classification.
-    - `tfidf_transformer_multi.pkl`: TfidfTransformer object for converting token counts into TF-IDF features for multi-class classification.
-    - `tfidf_transformer_related.pkl`: TfidfTransformer object for converting token counts into TF-IDF features for binary classification.
+    - `model_multi.pkl`: Model for multi-label classification of disaster-related messages.
+    - `model_related.pkl`: Model for binary classification to determine if a message is related to a disaster.
       
 - `training/`: Directory containing Jupyter Notebook files and datasets for the training process.
   - `dataset/`: Subdirectory containing datasets used for training.
@@ -118,10 +110,9 @@ This script contains the Flask application setup and the logic for loading the m
    - **`/go`**: Handles the user input and displays the classification results.
 
 3. **Model Prediction**:
-   - The input message is first vectorized using the `count_vec_related` and `tfidf_trans_related` transformers.
-   - The `related_model` predicts if the message is related to a disaster.
-   - If related, the message is further vectorized using `count_vec_multi` and `tfidf_trans_multi` transformers.
-   - The `multi_model` predicts the specific disaster-related categories.
+   - The input message is first predicted using the `related_model.
+   - If the message is related to a disaster, the message is further predicted using `multi_model` that inform the specific disaster-related categories.
+   - If the message is not related to a disaster, than a text informs that "No relevant categories found for this message".
 
 ### `HTML Templates`
 - **`master.html`**: The base template that includes the structure and common elements of the web pages.
@@ -139,7 +130,7 @@ cd path/to/project-directory
 ```
 Run the python file `train_classifier.py` to create the models needed for the web application:
 ```sh
-python models/train_classifier.py data/DisasterResponse.db related_model.pkl multi_model.pkl count_vec_related.pkl tfidf_trans_related.pkl count_vec_multi.pkl tfidf_trans_multi.pkl
+python train_classifier.py data/DisasterResponse.db models/best_models/related_model.pkl models/best_models/multi_model.pkl
 ```
 Run the python file ` run.py ` to access web application:
 ```sh
