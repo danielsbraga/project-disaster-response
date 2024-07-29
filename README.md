@@ -15,7 +15,7 @@
 - [Contact](#contact)
 
 ## Introduction
-In times of disaster, the ability to quickly and accurately communicate needs can mean the difference between life and death. People in emergency situations often turn to the internet to share their circumstances and seek humanitarian aid. However, the overwhelming volume of messages can make it challenging for NGOs and relief organizations to identify and respond to urgent needs promptly. This disconnect can delay critical assistance, exacerbating the suffering of those affected by disasters.
+In times of disaster, the ability to quickly and accurately communicate needs can mean the difference between life and death. People in emergency situations often turn to the internet to share their circumstances and seek humanitarian aid. However, **the overwhelming volume of messages can make it challenging for NGOs and relief organizations to identify and respond to urgent needs promptly**. This disconnect can delay critical assistance, exacerbating the suffering of those affected by disasters.
 
 ## Project Description
 The Disaster Response Project leverages machine learning to classify disaster-related messages, ensuring that emergency response teams can quickly and accurately identify and act upon urgent needs. By bridging the gap between those in need and those able to help, this project aims to enhance the efficiency and effectiveness of disaster response efforts.
@@ -23,13 +23,20 @@ The Disaster Response Project leverages machine learning to classify disaster-re
 The project features a user-friendly web application that visualizes training data and provides an intuitive interface for classifying messages. This enables response teams to be activated more assertively and efficiently during emergencies, ultimately saving lives and reducing suffering.
 
 ## Objectives
-The primary objectives of this project are:
+The primary objective of this project is:
+- **Provide a interface for response teams to evaluate if a message is related to disaster situations and of what type.**
+  
+The secondary objectives of this project are:
 - **Create an ETL pipeline**: Process the dataset to ensure it is suitable for analysis and modeling.
 - **Model Building and Evaluation**: Develop a multi-label classification ML model to identify the type of humanitarian support needed in Twitter messages from people in need.
 - **Flask Web App**: Add data visualizations using Plotly in the web app.
 
+
 ## Model Structure
-To manage the multi-class classification problem, a two-part machine learning model was implemented:
+
+This project analyzes disaster data from [Appen](https://www.appen.com/) to build a model for an API that classifies disaster messages. The data comprises two separate datasets that together contain real messages sent during disaster events, comprising over a hundred columns. The key content regards messages categorized for multi-class classification: one column indicates if a message is disaster-related, and multiple columns categorize the type of disaster.
+
+Considering the content in the data, this project was built in a two-part machine learning model:
 
 ### Part 1: Related Classification
 - **Objective**: Determine if a given message is related to a disaster (binary classification: related or not related).
@@ -116,26 +123,73 @@ This script contains the Flask application setup and the logic for loading the m
    - If related, the message is further vectorized using `count_vec_multi` and `tfidf_trans_multi` transformers.
    - The `multi_model` predicts the specific disaster-related categories.
 
-### HTML Templates
+### `HTML Templates`
 - **`master.html`**: The base template that includes the structure and common elements of the web pages.
 - **`go.html`**: Extends `master.html` and displays the classification results. It includes blocks to display the input message, any error messages, and the classification results.
 
 ## How to Interact with the Project
+
 ### Prerequisites
+
 Make sure you have Python and the necessary libraries installed. You can install the required libraries using `pip`:
 
 ```sh
 pip install -r requirements.txt
 cd path/to/project-directory
+```
+Run the python file `train_classifier.py` to create the models needed for the web application:
+```sh
+python models/train_classifier.py data/DisasterResponse.db related_model.pkl multi_model.pkl count_vec_related.pkl tfidf_trans_related.pkl count_vec_multi.pkl tfidf_trans_multi.pkl
+```
+Run the python file ` run.py ` to access web application:
+```sh
 python app\run.py
 ```
 
 ## Results and Discussion
 
+### Results
+
+Considering that this is a case where People in emergency situations need to be recognize, we want a model to be the best possible in predicting what messages are related to disasters, in technical language, we need to avoid the type 2 errors in a confusion matrix. Therefore, the metric that is considered to get the best model is the *Precision*.
+
+With that in mind, these are the results founded in the project:
+
+**Evaluating first model - Related Classification**
+   - *Precision*: 0.8201
+   - Recall: 0.6997
+   - F1 Score: 0.7217
+   - Accuracy: 0.6997
+
+**Evaluating first model – Multi Classification**
+   - *Macro Average Precision*: 0.9060
+   - Macro Average Recall: 0.9148
+   - Macro Average F1 Score: 0.8933
+   - Overall Accuracy: 0.9148
+
+Note: Macro Average is commonly used on Multi Class. It works by creating a median of all the results in every target column. For example, when evaluating the Macro Average Precision, we are getting the median of all precision values in every column in the target columns. Some may have bad values and others may have excellent results, but we use the median to simplify the evaluation and comparison between different models.
+
+### Discussion
+
+The evaluation showed good and grate results for prediction. Although I must point out some important analysis:
+- The first model has low Recall value, even though the imbalanced data has been corrected. This could mean that more data is needed or other approaches to transform the message data should be tested.
+ - As for the second model, the macro average for the evaluation metrics has high results, but it is good to point out that some class columns have terrible results. The project tried to overcome this problem by using a method called [MLSMOTE]( https://medium.com/thecyphy/handling-data-imbalance-in-multi-label-classification-mlsmote-531155416b87) to deal once again with the problem of imbalance data.
+   
 ## Conclusion
+
 In conclusion, the Disaster Response Project demonstrates the power of machine learning in addressing real-world problems. By effectively classifying disaster-related messages, the project aids emergency response teams in providing timely assistance, ultimately saving lives and reducing suffering.
 
+More tests must be conducted to deal with the problems with imbalance data.
+
+## Acknowledgements
+
+I would like to express my gratitude to the following individuals and organizations for their invaluable support throughout the development of this project:
+
+**Appen**: For providing the disaster-related message datasets used in this project.
+**Udacity**: For the educational resources and support.
+**Niteshsukhwani**: For providing a solution to deal with imbalanced data in a Multi-Class problem in his [github]( https://github.com/Prady029/LLSF_DL-MLSMOTE-Hybrid-for-handling-tail-labels)
+
 ## Contact
+
 For any questions or further information, please contact:
 
 **Name**: [Daniel S Braga]  
