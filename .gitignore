@@ -25,4 +25,8 @@ Thumbs.db
 *.swp
 *.swo
 *.bak
-*.tmp
+*.tmpe
+
+# Outros
+examples_of_prompts
+StartCommands
