@@ -1,0 +1,12 @@
+# Ambientes virtuais (se não quiser manter na raiz)
+.venv/
+__pycache__/
+*.py[cod]
+*.pkl
+*.joblib
+*.log
+
+# Arquivos locais e configs
+.env
+*.db
+*.sqlite3
