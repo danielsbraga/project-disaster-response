@@ -1,0 +1,28 @@
+# Python (geral)
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+*.so
+.venv/
+*.db
+*.sqlite3
+*.pkl
+*.joblib
+
+# Node (caso alguém rode fora do nextjs-app)
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# IDEs / Ambiente de desenvolvimento
+.vscode/
+.idea/
+.env*
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
