@@ -77,26 +77,43 @@ def api_classify():
 
 @app.route("/api/stats", methods=["GET"])
 def api_stats():
-    # Disaster Categories Distribution
-    categories = []
-    if not df.empty:
-        for cat in CATEGORY_NAMES:
-            count = int(df[cat].sum())
-            categories.append({"name": cat, "count": count})
-
-    print(categories)
-
-    # Message Genres
-    genre_counts = df["genre"].value_counts().to_dict()
-    genres = [{"name": k, "value": v} for k, v in genre_counts.items()]
-
-    return jsonify({
-        "categoriesDistribution": categories,
-        "genreDistribution": genres,
-        "totalMessages": int(df.shape[0]),
-        "disasterRelated": int(df["related"].sum()),
-        "nonDisasterRelated": int((df["related"] == 0).sum())
-    })
+    try:
+        # Calculate total messages
+        total_messages = len(df)
+        
+        # Calculate disaster related vs non-disaster related
+        disaster_related = df[df.related == 1].shape[0]
+        non_disaster_related = total_messages - disaster_related
+        
+        # Calculate category distribution (similar to original Graph 1)
+        related_messages = df[df.related == 1]
+        related_messages_features = related_messages.iloc[:, 5:]
+        category_distribution = []
+        for category, count in related_messages_features.sum().sort_values(ascending=False).items():
+            if count > 0:  # Only include categories with messages
+                category_distribution.append({
+                    "name": category.replace('_', ' ').title(),
+                    "count": int(count)
+                })
+        
+        # Calculate genre distribution (similar to original Graph 2)
+        genre_counts = df.genre.value_counts()
+        genre_distribution = [
+            {"name": genre, "value": int(count)}
+            for genre, count in genre_counts.items()
+        ]
+        
+        return jsonify({
+            "totalMessages": total_messages,
+            "disasterRelated": disaster_related,
+            "nonDisasterRelated": non_disaster_related,
+            "categoriesDistribution": category_distribution,
+            "genreDistribution": genre_distribution
+        })
+        
+    except Exception as e:
+        print(f"Error in api_stats: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # Roda o Flask na porta 5000
