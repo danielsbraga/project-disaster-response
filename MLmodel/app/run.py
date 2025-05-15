@@ -75,6 +75,29 @@ def api_classify():
         "error":      error_message
     })
 
+@app.route("/api/stats", methods=["GET"])
+def api_stats():
+    # Disaster Categories Distribution
+    categories = []
+    if not df.empty:
+        for cat in CATEGORY_NAMES:
+            count = int(df[cat].sum())
+            categories.append({"name": cat, "count": count})
+
+    print(categories)
+
+    # Message Genres
+    genre_counts = df["genre"].value_counts().to_dict()
+    genres = [{"name": k, "value": v} for k, v in genre_counts.items()]
+
+    return jsonify({
+        "categoriesDistribution": categories,
+        "genreDistribution": genres,
+        "totalMessages": int(df.shape[0]),
+        "disasterRelated": int(df["related"].sum()),
+        "nonDisasterRelated": int((df["related"] == 0).sum())
+    })
+
 if __name__ == '__main__':
     # Roda o Flask na porta 5000
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
